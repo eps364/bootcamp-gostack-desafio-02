@@ -15,13 +15,17 @@ routes.get('/', (req, res) => {
 routes.post('/sessions', SessionController.store);
 
 routes.use(authMiddleware);
+routes.get('/sessions', SessionController.getUserCurrent);
+
 routes.post('/users', UserController.store);
+routes.get('/users', UserController.index);
+routes.get('/users/:id', UserController.show);
 routes.put('/users', UserController.update);
 
 routes.post('/recipients', RecipientController.store);
 routes.get('/recipients', RecipientController.index);
-routes.get('/recipients/:id', RecipientController.show);
-routes.put('/recipients/:id', RecipientController.update);
-routes.delete('/recipients/:id', RecipientController.delete);
+routes.get('/recipients/:idRecipient', RecipientController.show);
+routes.put('/recipients/:idRecipient', RecipientController.update);
+routes.delete('/recipients/:idRecipient', RecipientController.delete);
 
 export default routes;

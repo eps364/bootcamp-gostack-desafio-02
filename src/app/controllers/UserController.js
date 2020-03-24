@@ -1,7 +1,24 @@
 import * as Yup from 'yup';
 import User from '../models/User';
+import Session from './SessionController';
 
 class UserController {
+    async index(req, res) {
+        const users = await User.findAll({
+            attributes: ['id', 'name', 'email'],
+        });
+
+        return res.json(users);
+    }
+
+    async show(req, res) {
+        const user = await User.findByPk(req.params.id, {
+            attributes: ['id', 'name', 'email'],
+        });
+
+        return res.json(user);
+    }
+
     async store(req, res) {
         const schema = Yup.object().shape({
             name: Yup.string().required(),
@@ -27,11 +44,11 @@ class UserController {
             id,
             name,
             email,
-            provider,
         });
     }
 
     async update(req, res) {
+        const idUserCurrent = await Session.getUserCurrent();
         const schema = Yup.object().shape({
             name: Yup.string(),
             email: Yup.string().email(),
@@ -49,11 +66,15 @@ class UserController {
         if (!(await schema.isValid(req.body)))
             return res.status(400).json({ error: 'Validation fails' });
 
-        const user = await User.findByPk(req.userId);
+        const user = await User.findByPk(idUserCurrent);
+
+        console.log(user);
 
         const { email } = req.body;
         if (email !== user.email) {
             const userExists = await User.findOne({ where: { email } });
+            const { id } = userExists;
+            console.log(id);
             if (userExists)
                 return res.status(400).json({ error: 'User already exists' });
         }

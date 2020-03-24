@@ -36,6 +36,18 @@ class SessionController {
             }),
         });
     }
+
+    async getUserCurrent(req, res) {
+        const token = req.headers.authorization;
+        const [, parcial] = token.split(' ');
+        const { id } = jwt.decode(parcial);
+
+        const user = await User.findByPk(id, {
+            attributes: ['id'],
+        });
+
+        return res.json(user);
+    }
 }
 
 export default new SessionController();
